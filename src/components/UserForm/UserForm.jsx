@@ -1,49 +1,43 @@
 import React from 'react';
+import {connect} from 'react-redux'
+import {makeAction} from "../../redux/actions/makeAction"
+import userFormActionTypes from "../../redux/actions/userFormActionTypes"
+import Field from "./Field"
 
-const UserForm = () => {
+const UserForm = ({submitUserForm, userForm, changeFieldValue}) => {
+
+    const handleSubmitUserForm = (event) => {
+        event.preventDefault();
+        submitUserForm();
+    };
+
+    const onChange = (event) => {
+        changeFieldValue({
+            id: event.target.id,
+            value: event.target.value
+        })
+    }
+
     return (
         <div className="card-body">
             <h5 className="card-title">Personal data</h5>
-
-            <form>
-				<div className="form-group row">
-                    <label htmlFor="Id" className="col-sm-2 col-form-label">Id</label>
-                    <div className="col-sm-10">
-                        <input type="text" className="form-control-short" id="Id" aria-describedby="IdHelp"
-                               placeholder="Id"/>
-                    </div>
-                </div>
-				
-				
-                <div className="form-group row">
-                    <label htmlFor="imie" className="col-sm-2 col-form-label">Name</label>
-                    <div className="col-sm-10">
-                        <input type="text" className="form-control" id="imie" aria-describedby="imieHelp"
-                               placeholder="Imię"/>
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label htmlFor="nazwisko" className="col-sm-2 col-form-label">Family Name</label>
-                    <div className="col-sm-10">
-                        <input type="text" className="form-control" id="nazwisko" aria-describedby="nazwiskoHelp"
-                               placeholder="Nazwisko"/>
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label htmlFor="rokUrodzenia" className="col-sm-2 col-form-label">Year of birth</label>
-                    <div className="col-sm-10">
-                        <input type="text" className="form-control" id="rokUrodzenia"
-                               aria-describedby="dataUrodzeniaHelp"
-                               placeholder="Rok urodzenia"/>
-                    </div>
-                </div>
-
-
-                <button type="submit" className="btn btn-primary">Save</button>
-
+            <form onSubmit={handleSubmitUserForm}>
+                {
+                    userForm.valueSeq().map((field) => (<Field key={field.id+Date.now()} onChange={onChange} field={field}/>))
+                }
+                <button type="submit" className="btn btn-primary">Submit</button>
             </form>
         </div>
     );
 }
 
-export default UserForm;
+const mapStateToProps = (state) => ({
+    userForm: state.userForm.data
+})
+
+const mapDispatchToProps = {
+    submitUserForm: makeAction(userFormActionTypes.SUBMIT_USER_FORM),
+    changeFieldValue: makeAction(userFormActionTypes.CHANGE_FIELD_VALUE)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserForm);

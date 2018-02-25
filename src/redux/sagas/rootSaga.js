@@ -1,8 +1,8 @@
 import {all} from "redux-saga/effects";
-import {watchSetupApplicationSaga} from "./setupSaga"
+import {watchUserFormSagas} from "./userFormSagas"
 
 export function* rootSaga() {
     yield all([
-        watchSetupApplicationSaga()
+        watchUserFormSagas()
     ])
 }
