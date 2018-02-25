@@ -1,0 +1,22 @@
+{
+  "name": "pol-czech-intonation",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "^4.0.0",
+    "popper": "^1.0.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
+    "react-scripts": "1.1.1",
+    "redux": "^3.7.2",
+    "redux-saga": "^0.16.0",
+    "yield": "0.0.6-8"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
