@@ -4,27 +4,41 @@ import UserForm from "./UserForm/UserForm"
 import {makeAction} from "../redux/actions/makeAction"
 import userFormActionTypes from "../redux/actions/userFormActionTypes"
 
+const userFormFields = {
+    id: '',
+    imie: '',
+    nazwisko: '',
+    dataUrodzenia: ''
+}
+
 class PolCzechIntonationContainer extends Component {
 
-    componentDidMount() {
-        this.props.initUserForm();
+    constructor(props) {
+        super(props);
+
+        this.handleSubmitUserForm = this.handleSubmitUserForm.bind(this);
+    }
+
+    handleSubmitUserForm(values) {
+        this.props.submitUserForm(values);
     }
 
     render() {
         return (
             <div className="col-md-12">
-                <UserForm />
+                <UserForm userFormData={userFormFields} handleSubmitUserForm={this.handleSubmitUserForm}/>
             </div>
         );
 
     }
 }
 
-const mapStateToProps = () => ({
+const mapStateToProps = (state) => ({
+    userFormData: state.userForm.data
 })
 
 const mapDispatchToProps = {
-    initUserForm: makeAction(userFormActionTypes.INIT_USER_FORM)
+    submitUserForm: makeAction(userFormActionTypes.SUBMIT_USER_FORM)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PolCzechIntonationContainer);

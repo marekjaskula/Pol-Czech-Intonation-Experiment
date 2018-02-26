@@ -13,16 +13,10 @@ const initialState = {
 
 function userFormReducer(state = initialState, action) {
     switch (action.type) {
-        case userFormActionTypes.INIT_USER_FORM_SUCCESS:
+        case userFormActionTypes.SUBMIT_USER_FORM_SUCCESS:
             return Object.assign({}, state, {
                 data: OrderedMap(action.payload)
             });
-        case userFormActionTypes.CHANGE_FIELD_VALUE:
-            const {id, value} = action.payload;
-            const field = state.data.get(id);
-            const newState = state.data.set(id, {...field, value: value});
-
-            return Object.assign({}, state, {data: newState});
         default:
             return state;
     }
