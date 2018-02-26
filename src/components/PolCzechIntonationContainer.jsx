@@ -8,7 +8,7 @@ const userFormFields = {
     id: '',
     imie: '',
     nazwisko: '',
-    dataUrodzenia: ''
+    dataUrodzenia: null
 }
 
 class PolCzechIntonationContainer extends Component {

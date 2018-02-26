@@ -12,10 +12,10 @@ class App extends Component {
                     <h2>Polish-Czech Intonation Experiment</h2>
                         <ul className="nav nav-pills">
                             <li className="nav-item">
-                                <a className="nav-link active" href="#">Dane osobowe</a>
+                                <div className="nav-link active nav-pointer">Dane osobowe</div>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">Nagrania</a>
+                                <div className="nav-link nav-pointer">Nagrania</div>
                             </li>
                         </ul>
                     </div>
