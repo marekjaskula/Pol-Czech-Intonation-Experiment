@@ -1,9 +1,48 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 
 import './App.css';
-import PolCzechIntonationContainer from "./components/PolCzechIntonationContainer"
+import PolCzechIntonationContainer from "./components/PolCzechIntonationContainer";
+import {makeAction} from "./redux/actions/makeAction"
+import applicationActionTypes from "./redux/actions/applicationActionTypes"
+
+export const APPLICATION_STATE = {
+    USER_FORM: 'USER_FORM',
+    RECORDS: 'RECORDS'
+}
 
 class App extends Component {
+
+    prepareNavElements = () => {
+        const elements = [
+            {
+                label: 'Dane osobowe',
+                appState: APPLICATION_STATE.USER_FORM
+            },
+            {
+                label: 'Nagrania',
+                appState: APPLICATION_STATE.RECORDS
+            }
+        ];
+
+        const applicationState = this.props.applicationState;
+
+        const renderElements = [];
+        elements.forEach((element) => {
+            const active = element.appState === applicationState ? 'active' : '';
+            const renderElement = <li key={element.appState} className="nav-item" onClick={this.navLinkHandler.bind(this, element.appState)}>
+                <div className={`nav-link nav-pointer ${active}`}>{element.label}</div>
+            </li>;
+                renderElements.push(renderElement);
+        })
+
+        return renderElements;
+    }
+
+    navLinkHandler = (appState) => {
+        this.props.changeActionState(appState);
+    }
+
     render() {
         return (
             <div className="container app">
@@ -11,12 +50,7 @@ class App extends Component {
                     <div className="col-12 app-header">
                     <h2>Polish-Czech Intonation Experiment</h2>
                         <ul className="nav nav-pills">
-                            <li className="nav-item">
-                                <div className="nav-link active nav-pointer">Dane osobowe</div>
-                            </li>
-                            <li className="nav-item">
-                                <div className="nav-link nav-pointer">Nagrania</div>
-                            </li>
+                            {this.prepareNavElements()}
                         </ul>
                     </div>
                 </div>
@@ -28,4 +62,12 @@ class App extends Component {
     }
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+    applicationState: state.applicationState
+})
+
+const mapDispatchToProps = {
+    changeActionState: makeAction(applicationActionTypes.CHANGE_APPLICATION_STATE)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

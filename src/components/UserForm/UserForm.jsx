@@ -37,7 +37,7 @@ const UserForm = (props) => {
 
     return (
         <div className="card-body">
-            <h5 className="card-title">Personal data</h5>
+            <h5 className="card-title">Dane osobowe</h5>
             <form onSubmit={handleSubmit}>
                 <TextInput id="id" onChange={handleChange} name="id" label="Id" placeholder="Id" value={values.id}/>
                 <TextInput id="imie" onChange={handleChange} name="imie" label="Imię" placeholder="Imię"

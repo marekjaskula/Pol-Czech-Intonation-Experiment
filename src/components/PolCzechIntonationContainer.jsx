@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux'
-import UserForm from "./UserForm/UserForm"
-import {makeAction} from "../redux/actions/makeAction"
-import userFormActionTypes from "../redux/actions/userFormActionTypes"
+import {connect} from 'react-redux';
+import UserForm from "./UserForm/UserForm";
+import {makeAction} from "../redux/actions/makeAction";
+import userFormActionTypes from "../redux/actions/userFormActionTypes";
+import {APPLICATION_STATE} from "../App"
+import Records from "./Records/Records"
 
 const userFormFields = {
     id: '',
@@ -24,9 +26,16 @@ class PolCzechIntonationContainer extends Component {
     }
 
     render() {
+        const {applicationState} = this.props;
         return (
             <div className="col-md-12">
-                <UserForm userFormData={userFormFields} handleSubmitUserForm={this.handleSubmitUserForm}/>
+                {
+                    applicationState === APPLICATION_STATE.USER_FORM
+                    && <UserForm userFormData={userFormFields} handleSubmitUserForm={this.handleSubmitUserForm}/>}
+                {
+                    applicationState === APPLICATION_STATE.RECORDS
+                    && <Records />
+                }
             </div>
         );
 
@@ -34,7 +43,8 @@ class PolCzechIntonationContainer extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    userFormData: state.userForm.data
+    userFormData: state.userForm.data,
+    applicationState: state.applicationState
 })
 
 const mapDispatchToProps = {
