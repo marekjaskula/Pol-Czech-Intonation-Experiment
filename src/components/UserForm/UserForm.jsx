@@ -1,5 +1,6 @@
 import React from 'react';
 import {withFormik} from "formik"
+import moment from 'moment';
 import TextInput from "./SFC/TextInput"
 import DatePicker from 'react-datepicker';
 
@@ -50,7 +51,7 @@ const UserForm = (props) => {
 
                             <DatePicker
                                 dateFormat="DD/MM/YYYY"
-                                selected={values.dataUrodzenia}
+                                selected={moment(values.dataUrodzenia)}
                                 onChange={(date) => {
                                     props.setFieldValue('dataUrodzenia', date)
                                 }}

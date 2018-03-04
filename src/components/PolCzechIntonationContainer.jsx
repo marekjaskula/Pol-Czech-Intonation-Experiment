@@ -6,13 +6,6 @@ import userFormActionTypes from "../redux/actions/userFormActionTypes";
 import {APPLICATION_STATE} from "../App"
 import Records from "./Records/Records"
 
-const userFormFields = {
-    id: '',
-    imie: '',
-    nazwisko: '',
-    dataUrodzenia: null
-}
-
 class PolCzechIntonationContainer extends Component {
 
     constructor(props) {
@@ -26,7 +19,14 @@ class PolCzechIntonationContainer extends Component {
     }
 
     render() {
-        const {applicationState} = this.props;
+        const {applicationState, userFormData} = this.props;
+        const userFormFields = userFormData.size ? userFormData.toJS() : {
+            id: '',
+            imie: '',
+            nazwisko: '',
+            dataUrodzenia: Date.now()
+        };
+
         return (
             <div className="col-md-12">
                 {
