@@ -1,14 +1,17 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
 
 import './App.css';
 import PolCzechIntonationContainer from "./components/PolCzechIntonationContainer";
 import {makeAction} from "./redux/actions/makeAction"
 import applicationActionTypes from "./redux/actions/applicationActionTypes"
+import recordsActionTypes from "./redux/actions/recordsActionTypes"
 
 export const APPLICATION_STATE = {
     USER_FORM: 'USER_FORM',
-    RECORDS: 'RECORDS'
+    RECORDS: 'RECORDS',
+    SLIDE_SESSION: 'SLIDE_SESSION'
 }
 
 class App extends Component {
@@ -22,6 +25,10 @@ class App extends Component {
             {
                 label: 'Nagrania',
                 appState: APPLICATION_STATE.RECORDS
+            },
+            {
+                label: 'Badanie',
+                appState: APPLICATION_STATE.SLIDE_SESSION
             }
         ];
 
@@ -41,6 +48,10 @@ class App extends Component {
 
     navLinkHandler = (appState) => {
         this.props.changeActionState(appState);
+
+        if (appState === APPLICATION_STATE.RECORDS) {
+            this.props.toggleShowRecord(false);
+        }
     }
 
     render() {
@@ -62,12 +73,19 @@ class App extends Component {
     }
 }
 
+App.propTypes = {
+    applicationState: PropTypes.string.isRequired,
+    changeActionState: PropTypes.func.isRequired,
+    toggleShowRecord: PropTypes.func.isRequired
+}
+
 const mapStateToProps = (state) => ({
     applicationState: state.applicationState
 })
 
 const mapDispatchToProps = {
-    changeActionState: makeAction(applicationActionTypes.CHANGE_APPLICATION_STATE)
+    changeActionState: makeAction(applicationActionTypes.CHANGE_APPLICATION_STATE),
+    toggleShowRecord: makeAction(recordsActionTypes.TOGGLE_SHOW_RECORD)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

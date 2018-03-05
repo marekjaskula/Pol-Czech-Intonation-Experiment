@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
+
 import UserForm from "./UserForm/UserForm";
 import {makeAction} from "../redux/actions/makeAction";
 import userFormActionTypes from "../redux/actions/userFormActionTypes";
 import {APPLICATION_STATE} from "../App"
 import Records from "./Records/Records"
+import SlideSession from "./SlideSession/SlideSession"
 
 class PolCzechIntonationContainer extends Component {
 
@@ -36,10 +39,20 @@ class PolCzechIntonationContainer extends Component {
                     applicationState === APPLICATION_STATE.RECORDS
                     && <Records />
                 }
+                {
+                    applicationState === APPLICATION_STATE.SLIDE_SESSION
+                    && <SlideSession />
+                }
             </div>
         );
 
     }
+}
+
+PolCzechIntonationContainer.propTypes = {
+    userFormData: PropTypes.any.isRequired,
+    applicationState: PropTypes.string.isRequired,
+    submitUserForm: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({

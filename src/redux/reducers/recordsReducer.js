@@ -18,6 +18,10 @@ function recordsReducer(state = initialState, action) {
             const currentRecord = state.currentRecord;
             return {...state, currentRecord: currentRecord.set('image', action.payload)};
         }
+        case recordsActionTypes.CHANGE_AUDIO_RECORD: {
+            const currentRecord = state.currentRecord;
+            return {...state, currentRecord: currentRecord.set('audio', action.payload)};
+        }
         case recordsActionTypes.SAVE_RECORD: {
             const currentRecord = state.currentRecord.toJS();
             const id = Date.now();
@@ -26,6 +30,16 @@ function recordsReducer(state = initialState, action) {
         }
         case recordsActionTypes.TOGGLE_SHOW_RECORD: {
             return {...state, showRecord: action.payload};
+        }
+        case recordsActionTypes.SET_CURRENT_RECORD: {
+            return {...state, currentRecord: Map(action.payload)};
+        }
+        case recordsActionTypes.CLEAR_CURRENT_RECORD: {
+            return {...state, currentRecord: Map({})};
+        }
+        case recordsActionTypes.DELETE_RECORD_BY_ID: {
+            const recordId = action.payload;
+            return {...state, list: state.list.delete(recordId)};
         }
         default:
             return state;

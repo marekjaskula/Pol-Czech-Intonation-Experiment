@@ -2,8 +2,9 @@
  * Created by Mazi on 2018-03-01.
  */
 
-import {all, takeEvery, put} from "redux-saga/effects";
+import {all, takeEvery, put, select} from "redux-saga/effects";
 import recordsActionTypes from "../actions/recordsActionTypes";
+import {getRecordById} from "../selectors/recordSelectors"
 
 export function * prepareStageForRecordSaga() {
     try {
@@ -38,8 +39,21 @@ export function * getImageForRecord() {
     }
 }
 
+export function * showRecordSaga (action) {
+    try {
+        const recordId = action.payload;
+        const record = yield select(getRecordById, recordId);
+
+        yield put({type: recordsActionTypes.SET_CURRENT_RECORD, payload: record});
+        yield put({type: recordsActionTypes.TOGGLE_SHOW_RECORD, payload: true});
+    } catch(error) {
+        console.error(error);
+    }
+}
+
 export function* watchRecordsSagas() {
     yield all([
-        yield takeEvery(recordsActionTypes.PREPARE_STAGE_FOR_RECORD, prepareStageForRecordSaga)
+        yield takeEvery(recordsActionTypes.PREPARE_STAGE_FOR_RECORD, prepareStageForRecordSaga),
+        yield takeEvery(recordsActionTypes.SHOW_RECORD_BY_ID, showRecordSaga)
     ])
 }
