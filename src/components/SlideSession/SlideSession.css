@@ -1,0 +1,11 @@
+
+.session-container {
+  min-height: 200px;
+}
+
+.session-overlay {
+  display: flex;
+  height: 200px;
+  justify-content: center;
+  align-items: center;
+}

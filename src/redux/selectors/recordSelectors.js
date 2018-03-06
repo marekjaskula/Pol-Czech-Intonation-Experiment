@@ -5,3 +5,7 @@
 export function getRecordById(state, recordId) {
     return state.records.list.get(recordId);
 }
+
+export function getAllRecords(state) {
+    return state.records.list;
+}
