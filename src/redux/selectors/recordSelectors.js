@@ -9,3 +9,7 @@ export function getRecordById(state, recordId) {
 export function getAllRecords(state) {
     return state.records.list;
 }
+
+export function getCurrentRecord(state) {
+    return state.records.currentRecord;
+}

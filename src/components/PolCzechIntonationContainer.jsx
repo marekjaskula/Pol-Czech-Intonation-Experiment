@@ -5,9 +5,10 @@ import PropTypes from 'prop-types';
 import UserForm from "./UserForm/UserForm";
 import {makeAction} from "../redux/actions/makeAction";
 import userFormActionTypes from "../redux/actions/userFormActionTypes";
-import {APPLICATION_STATE} from "../App"
-import Records from "./Records/Records"
-import SlideSession from "./SlideSession/SlideSession"
+import {APPLICATION_STATE} from "../App";
+import Records from "./Records/Records";
+import SlideSession from "./SlideSession/SlideSession";
+import connectionManagerActionTypes from "../redux/actions/connectionManagerActionTypes"
 
 class PolCzechIntonationContainer extends Component {
 
@@ -15,6 +16,7 @@ class PolCzechIntonationContainer extends Component {
         super(props);
 
         this.handleSubmitUserForm = this.handleSubmitUserForm.bind(this);
+        props.initConnection();
     }
 
     handleSubmitUserForm(values) {
@@ -52,7 +54,8 @@ class PolCzechIntonationContainer extends Component {
 PolCzechIntonationContainer.propTypes = {
     userFormData: PropTypes.any.isRequired,
     applicationState: PropTypes.string.isRequired,
-    submitUserForm: PropTypes.func.isRequired
+    submitUserForm: PropTypes.func.isRequired,
+    initConnection: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({
@@ -61,7 +64,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-    submitUserForm: makeAction(userFormActionTypes.SUBMIT_USER_FORM)
+    submitUserForm: makeAction(userFormActionTypes.SUBMIT_USER_FORM),
+    initConnection: makeAction(connectionManagerActionTypes.INIT_CONNECTION)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PolCzechIntonationContainer);

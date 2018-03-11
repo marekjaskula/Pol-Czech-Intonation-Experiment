@@ -4,7 +4,9 @@
 
 import {all, takeEvery, put, select} from "redux-saga/effects";
 import recordsActionTypes from "../actions/recordsActionTypes";
-import {getRecordById} from "../selectors/recordSelectors"
+import {getCurrentRecord, getRecordById} from "../selectors/recordSelectors"
+import blobToBase64 from '../../helpers/audioBlobHelper';
+import ConnectionManager from "../../components/ConnectionManager/ConnectionManager"
 
 export function * prepareStageForRecordSaga() {
     try {
@@ -51,9 +53,46 @@ export function * showRecordSaga (action) {
     }
 }
 
+export function * saveRecordSaga() {
+    try {
+        const currentRecord = yield select(getCurrentRecord);
+        const audio = currentRecord.get('audio');
+        const payload = {
+            id: currentRecord.get('id'),
+            imageBlob: currentRecord.get('image'),
+            audioBlob: ''
+        }
+
+        const getAudioBase64Content = (result) => {
+            const bundle = {
+                command: 'upload_record',
+                payload: {
+                    id: payload.id,
+                    image: {
+                        fileName: `image_${payload.id}`,
+                        data: payload.imageBlob
+                    },
+                    audio: {
+                        fileName: `audio_${payload.id}`,
+                        data: result
+                    }
+                }
+            };
+
+            ConnectionManager.sendBundle(bundle);
+        }
+
+        blobToBase64(audio.blob, getAudioBase64Content)
+
+    } catch(error) {
+        console.error(error);
+    }
+}
+
 export function* watchRecordsSagas() {
     yield all([
         yield takeEvery(recordsActionTypes.PREPARE_STAGE_FOR_RECORD, prepareStageForRecordSaga),
-        yield takeEvery(recordsActionTypes.SHOW_RECORD_BY_ID, showRecordSaga)
+        yield takeEvery(recordsActionTypes.SHOW_RECORD_BY_ID, showRecordSaga),
+        yield takeEvery(recordsActionTypes.SAVE_RECORD, saveRecordSaga)
     ])
 }

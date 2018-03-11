@@ -26,7 +26,8 @@ function recordsReducer(state = initialState, action) {
             const currentRecord = state.currentRecord.toJS();
             const id = Date.now();
             const listItem = {id: id, ...currentRecord};
-            return {...state, list: state.list.set(id, listItem), showRecord: false};
+            const currentRecordMap = state.currentRecord;
+            return {...state, list: state.list.set(id, listItem), showRecord: false, currentRecord: currentRecordMap.set('id', id)};
         }
         case recordsActionTypes.TOGGLE_SHOW_RECORD: {
             return {...state, showRecord: action.payload};
