@@ -22,7 +22,7 @@ export function * submitUserFormSaga(action) {
       // var newNameFolder = FileName;
 
         const bundle = {
-            command: 'csv',
+            command: ConnectionManager.COMMAND.CSV,
             payload: {
                 filename: encodeURIComponent(fileName),
                 nameFolder: encodeURIComponent(fileName),

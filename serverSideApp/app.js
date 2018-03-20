@@ -1,10 +1,40 @@
 var webSocketServer = require('ws').Server;
+
 var http = require('http');
 var fs = require('fs');
+var url = require('url');
 
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
-var csvWriter = require('csv-write-stream')
+var csvWriter = require('csv-write-stream');
+
+var express = require('express');
+var app = express();
+
+app.use(express.static(appDir + '\\records\\'));
+
+
+var server2 = app.listen(8080);
+
+/*http.createServer(function (req, res) {
+ var query = url.parse(req.url,true).query;
+ console.log(req.url);
+ var pic = req.url;
+
+ //read the image using fs and send the image content back in the response
+ fs.readFile(appDir + '\\records\\' + pic, function (err, content) {
+ if (err) {
+ res.writeHead(400, {'Content-type':'text/html'})
+ console.log(err);
+ res.end("No such image");
+ } else {
+ //specify the content type in the response will be an image
+ res.writeHead(200,{'Content-type':'application/octet-stream','Access-Control-Allow-Origin': '*','status': 200});
+ res.end(content, 'binary');
+ }
+ });
+ }).listen(8080);*/
+
 
 var webSocketServerObject = new webSocketServer({port: 8090});
 
@@ -46,6 +76,12 @@ webSocketServerObject.on('connection', function(socketObject) {
 
             if (parsedMessage.command === 'upload_record') {
                 uploadRecord(parsedMessage.payload);
+            }
+
+            if (parsedMessage.command === 'get_records') {
+                getRecords().then(function(response) {
+                    socketObject.send(JSON.stringify({records: response}));
+                });
             }
         }
         catch (exepction) {
@@ -111,16 +147,10 @@ webSocketServerObject.on('connection', function(socketObject) {
         writer.write(data);
         writer.end();
     }
-    
+
     function uploadAudio(blob, fileName) {
         var buf = new Buffer(blob, 'base64');
-        fs.writeFile(fileName + ".wav", buf, function(err) {
-            if(err) {
-                console.log("err", err);
-            } else {
-                //return res.json({'status': 'success'});
-            }
-        });
+        return fs.writeFileSync(fileName + ".wav", buf);
 
     }
 
@@ -130,13 +160,7 @@ webSocketServerObject.on('connection', function(socketObject) {
         var extension = blob.substring("data:image/".length, blob.indexOf(";base64"))
         extension = extension === 'jpeg' ? '.jpg' : "." + extension;
 
-        fs.writeFile(fileName + extension, buf, function(err) {
-            if(err) {
-                console.log("err", err);
-            } else {
-                //return res.json({'status': 'success'});
-            }
-        })
+        return fs.writeFileSync(fileName + extension, blob, 'binary');
     }
 
     function uploadRecord(record) {
@@ -156,6 +180,86 @@ webSocketServerObject.on('connection', function(socketObject) {
 
         uploadAudio(record.audio.data, audioFileName);
         uploadImage(record.image.data, imageFileName);
+
+        socketObject.send(JSON.stringify({upload_record: true}));
+    }
+
+    function getRecords() {
+        var recordsFolder = appDir + '\\records\\';
+        var records = [];
+
+        return new Promise(function(resolve,reject) {
+            var folders = fs.readdirSync(recordsFolder);
+            folders.forEach(function(folder) {
+                const recordFolder = recordsFolder + folder;
+                var recordFiles = fs.readdirSync(recordFolder);
+
+                var recordObj = {
+                    id: folder
+                }
+
+                recordFiles.forEach(function(recordFile) {
+                    if (recordFile.indexOf('.wav') > -1) {
+                        //audio
+                        recordObj.audio = "http://localhost:8080/" + folder + '/' + recordFile;
+                    } else {
+                        //image
+                        recordObj.image = "http://localhost:8080/" + folder + '/' + recordFile;
+                    }
+                })
+
+                records.push(recordObj);
+
+                recordObj = {
+                    id: null,
+                    image: null,
+                    audio: null
+                };
+            })
+
+            resolve(records);
+        })
+
+    }
+
+    function getImageBase64DataFromFile(filePath) {
+        // read binary data
+        var bitmap = fs.readFileSync(filePath, 'binary');
+        var base64Content =  new Buffer(bitmap).toString('base64');
+        var index = filePath.lastIndexOf('.');
+        var extension = filePath.slice(index+1, filePath.length);
+        var mimeType = '';
+        if (extension) {
+            mimeType = getURIPrefixForImageBase64(extension.toLowerCase());
+            if (!mimeType) {
+                throw new Error('Unhandled MIME type')
+            }
+        } else {
+            throw new Error('No file extension')
+        }
+
+        // convert binary data to base64 encoded string
+        return `${mimeType}${base64Content}`;
+    }
+
+    function getURIPrefixForImageBase64(extension) {
+        switch (extension) {
+            case 'jpeg':
+            case 'jpg':
+                return 'data:image/jpeg;base64,';
+            case 'gif':
+                return 'data:image/gif;base64,';
+            case 'png':
+                return 'data:image/png;base64,';
+            case 'svg':
+                return 'data:image/svg+xml;base64,';
+            default:
+                return '';
+        }
+    }
+
+    function getAudioBase64DataFromFile(filePath) {
+        return filePath;
     }
 
 });
@@ -166,5 +270,3 @@ var server = http.createServer(function(req, resp) {
 
 server.listen(5050);
 console.log('Server started');
-
-

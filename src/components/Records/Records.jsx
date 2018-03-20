@@ -13,6 +13,7 @@ import recordsActionTypes from "../../redux/actions/recordsActionTypes";
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Record from "./Record";
+import ConnectionManager from "../ConnectionManager/ConnectionManager"
 
 class Records extends Component {
 
@@ -27,16 +28,16 @@ class Records extends Component {
                 },
                 {
                     Header: "Obrazek",
-                    accessor: "image",
+                    accessor: "imageUrl",
                     Cell: row => (
                         <img src={row.value} style={{maxHeight: '100px'}}/>
                     )
                 },
                 {
                     Header: "Nagranie",
-                    accessor: "audio",
+                    accessor: "audioUrl",
                     Cell: row => {
-                        const blobUrl = row.value ? row.value.blobURL : '';
+                        const blobUrl = row.value;
                         return <div><ReactAudioPlayer
                             src={blobUrl}
                             controls
@@ -51,12 +52,14 @@ class Records extends Component {
             ]
         }
 
+
         this.rowClickHandler = this.rowClickHandler.bind(this);
         this.addRecordHandler = this.addRecordHandler.bind(this);
         this.getRecordActions = this.getRecordActions.bind(this);
     }
 
     componentDidMount() {
+        ConnectionManager.sendBundle({command: ConnectionManager.COMMAND.GET_RECORDS})
     }
 
     getRecordActions(row) {
@@ -138,7 +141,8 @@ Records.prototypes = {
     toggleShowRecord: PropTypes.func.isRequired,
     showRecordById: PropTypes.func.isRequired,
     clearCurrentRecord: PropTypes.func.isRequired,
-    deleteRecord: PropTypes.func.isRequired
+    deleteRecord: PropTypes.func.isRequired,
+    getRecords: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => ({

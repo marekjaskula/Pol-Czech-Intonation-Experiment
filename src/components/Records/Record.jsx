@@ -6,6 +6,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {ReactMic} from 'react-mic';
+import ReactAudioPlayer from 'react-audio-player';
 
 import {makeAction} from "../../redux/actions/makeAction";
 import recordsActionTypes from "../../redux/actions/recordsActionTypes"
@@ -39,9 +40,6 @@ class Record extends Component {
         this.props.changeRecordAudio(recordedBlob);
     }
 
-    componentDidMount() {
-    }
-
     handleImageChange(event) {
         event.preventDefault();
         const file = event.target.files[0];
@@ -57,9 +55,10 @@ class Record extends Component {
 
     render() {
         const {currentRecord, saveRecord} = this.props;
-        const image = currentRecord.get('image');
+        const image = currentRecord.get('image') || currentRecord.get('imageUrl');
+        const audio = currentRecord.get('audio')  ? currentRecord.get('audio').blobUrl : currentRecord.get('audioUrl');
+        const isReady = image || currentRecord.get('audio') || currentRecord.get('audioUrl');
 
-        const isImageLoaded = image === undefined;
         return (
             <div className="card-body">
                 <h5 className="card-title">Nagranie</h5>
@@ -75,6 +74,11 @@ class Record extends Component {
                             strokeColor="#000000"
                             backgroundColor="#e5e5e5"
                             visualSetting="frequencyBars"/>
+
+                        {audio && <ReactAudioPlayer
+                            src={audio}
+                            controls
+                        />}
                         <div>
                             <button onClick={this.startRecording} type="button" className="btn btn-outline-primary">Start
                             </button>
@@ -84,7 +88,7 @@ class Record extends Component {
 
                     <button type="button" className="btn btn-success" onClick={() => {
                         saveRecord()
-                    }} disabled={isImageLoaded}>Zapisz
+                    }} disabled={false}>Zapisz
                     </button>
                 </div>
             </div>

@@ -22,12 +22,18 @@ function recordsReducer(state = initialState, action) {
             const currentRecord = state.currentRecord;
             return {...state, currentRecord: currentRecord.set('audio', action.payload)};
         }
-        case recordsActionTypes.SAVE_RECORD: {
-            const currentRecord = state.currentRecord.toJS();
-            const id = Date.now();
-            const listItem = {id: id, ...currentRecord};
-            const currentRecordMap = state.currentRecord;
-            return {...state, list: state.list.set(id, listItem), showRecord: false, currentRecord: currentRecordMap.set('id', id)};
+        case recordsActionTypes.CHANGE_MEDIA_URL_RECORD: {
+            const {recordId, imageUrl, audioUrl} = action.payload;
+            let record = state.list.get(recordId);
+
+            if (!record) {
+                record = {};
+            }
+            record.id = recordId;
+            record.imageUrl = imageUrl;
+            record.audioUrl = audioUrl;
+
+            return {...state, list: state.list.set(recordId, record)};
         }
         case recordsActionTypes.TOGGLE_SHOW_RECORD: {
             return {...state, showRecord: action.payload};

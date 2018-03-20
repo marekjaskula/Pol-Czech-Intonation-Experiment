@@ -58,14 +58,14 @@ export function * saveRecordSaga() {
         const currentRecord = yield select(getCurrentRecord);
         const audio = currentRecord.get('audio');
         const payload = {
-            id: currentRecord.get('id'),
+            id: Date.now(),
             imageBlob: currentRecord.get('image'),
             audioBlob: ''
         }
 
         const getAudioBase64Content = (result) => {
             const bundle = {
-                command: 'upload_record',
+                command: ConnectionManager.COMMAND.UPLOAD_RECORD,
                 payload: {
                     id: payload.id,
                     image: {
@@ -89,10 +89,35 @@ export function * saveRecordSaga() {
     }
 }
 
+export function * getRecordsSaga() {
+    try {
+        ConnectionManager.sendBundle({command: ConnectionManager.COMMAND.GET_RECORDS})
+    } catch (error) {
+        yield put({type: recordsActionTypes.GET_RECORDS_FAILED, error: error});
+    }
+}
+
+export function * parseFetchedRecordsSaga(action) {
+    try {
+        const records = action.payload;
+        for (let i=0; i < records.length; i++) {
+            yield put({type: recordsActionTypes.CHANGE_MEDIA_URL_RECORD, payload: {
+                recordId: records[i].id,
+                imageUrl: records[i].image,
+                audioUrl: records[i].audio
+            }});
+        }
+    } catch (error) {
+        yield put({type: recordsActionTypes.GET_RECORDS_FAILED, error: error});
+    }
+}
+
 export function* watchRecordsSagas() {
     yield all([
         yield takeEvery(recordsActionTypes.PREPARE_STAGE_FOR_RECORD, prepareStageForRecordSaga),
         yield takeEvery(recordsActionTypes.SHOW_RECORD_BY_ID, showRecordSaga),
-        yield takeEvery(recordsActionTypes.SAVE_RECORD, saveRecordSaga)
+        yield takeEvery(recordsActionTypes.SAVE_RECORD, saveRecordSaga),
+        yield takeEvery(recordsActionTypes.GET_RECORDS, getRecordsSaga),
+        yield takeEvery(recordsActionTypes.GET_FETCHED_RECORDS, parseFetchedRecordsSaga)
     ])
 }
